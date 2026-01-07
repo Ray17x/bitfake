@@ -70,7 +70,7 @@ namespace Outputs {
 
 
     // tbf only to be used while developing
-    inline void scram(const std::string_view& msg) {
+    inline void scram() {
         std::cout
         << Colors::BOLD_MAGENTA
         << "The program will now exit (Scram function)"

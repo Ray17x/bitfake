@@ -43,12 +43,12 @@ int main(int argc, char* argv[]) {
             ++i;
 
             // OUTPUT path keeps file name
-            // OUTPUT dir is where it will write.
+            // OUTPUT dir is where it will write
         }
     }
 
     for (size_t j = 0; j < args.size(); ++j) {
-        // Main functions go here.
+        // Main functions go here
 
         if (args[j] == "-h" || args[j] == "--help") {
             log("help command.");
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
         }
 
         // main features ig
-        
+
     }
 
     return EXIT_SUCCESS;
