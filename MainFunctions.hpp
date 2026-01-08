@@ -58,8 +58,14 @@ namespace MainFunctions {
         
         if (!std::filesystem::exists(path)) { warn("File doesn't exist."); return false; }
         std::string ext = path.extension().string();
+        // Remove the leading dot from the extension
+        if (!ext.empty() && ext[0] == '.') {
+            ext = ext.substr(1);
+        }
+        // Convert to lowercase for case-insensitive comparison
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
         if (std::find(audio_extensions.begin(), audio_extensions.end(), ext) != audio_extensions.end()) {
-            log("Valid audio file: " + path.string());
+            // log("Valid audio file: " + path.string());
             return true;
         } else {
             warn("Unsupported audio file format: " + path.string());
@@ -73,7 +79,7 @@ namespace MainFunctions {
         std::string codec_name;
         int bitrate_kbps;
         int sample_rate_hz;
-        int channels; // likely returns 0 for unknown reasons..
+        int channels; // likely returns 0 for unknown reasons.. help me figure this out
     };
 
     struct AdvancedMetaData {
@@ -115,10 +121,14 @@ namespace MainFunctions {
     };
 
     struct ReplayGainInfo {
+        std::string TITLE;
+        std::string file_path;
         float track_gain;
         float album_gain;
         float track_peak;
         float album_peak;
+
+        // Likely the most important info for audio 
     };
 
     // Data extracting

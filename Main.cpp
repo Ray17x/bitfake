@@ -4,6 +4,10 @@ using namespace Outputs;
 #include <filesystem>
 #include "Configuration.hpp"
 #include <fstream>
+#include <thread>
+#include <chrono>
+#include "MainFunctions.hpp"
+using namespace MainFunctions;
 
 GLOBAL_CONFIG GlobalConf;
 
@@ -68,6 +72,26 @@ int main(int argc, char* argv[]) {
         }
 
         // main features ig
+
+        if (args[j] == "--extract-codec-info" || args[j] == "-EAI") {
+            if (GlobalConf.INPUT_PATH.empty()) err("NO input path specified.");
+            if (std::filesystem::is_directory(GlobalConf.INPUT_PATH) && GlobalConf.OUTPUT_PATH.empty()) {
+                warn("You are extracting codec info for a directory but have not specified an output file. It is highly recommended to specify an output file when extracting codec info for multiple files.");
+                warn("Ctrl + C to abort please!! :*(");
+                // Count down 5 seconds
+                for (int k = 5; k > 0; --k) {
+                    std::cout << k << "..." << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+                log("Proceeding :*(");
+            }
+
+            // log("I LIED!!! NOT YET THIS IS A TEST BUILD!!");
+            // ^^^ he died because we implemented this feature
+
+            MainFunctions::BasicCodecInfo info = MainFunctions::ExtractBasicCodec(GlobalConf.INPUT_PATH);
+            log("Codec Info extracted!");
+        }
 
     }
 
