@@ -114,6 +114,8 @@ namespace {
                 break;
             default:
                 // Use FFmpeg's automatic codec detection for other formats
+                // This may not work for all formats; add specific cases if needed
+                warn("Using automatic codec detection for conversion type. This may not produce optimal results.");
                 break;
         }
         
@@ -210,6 +212,8 @@ void MainFunctions::Convert(const std::filesystem::path& input_path, const std::
     }
     
     // If input is a directory, recursively process all audio files
+    // Note: Uses recursive calls which could theoretically cause stack overflow
+    // with extremely deep directory structures, but this is unlikely in practice
     if (std::filesystem::is_directory(input_path)) {
         log("Processing directory: " + input_path.string());
         
@@ -283,17 +287,22 @@ void MainFunctions::Convert(const std::filesystem::path& input_path, const std::
     
     FILE* pipe = popen(command.c_str(), "r");
     if (!pipe) {
-        err("Failed to execute ffmpeg command for: " + input_path.filename().string());
+        std::string err_msg = "Failed to execute ffmpeg command for: " + input_path.filename().string();
+        err_msg += "\nCommand: " + command;
+        err(err_msg);
         return;
     }
     
     // Read output
-    std::array<char, 256> buffer;
+    constexpr size_t PIPE_BUFFER_SIZE = 256;
+    std::array<char, PIPE_BUFFER_SIZE> buffer;
     std::ostringstream result_stream;
     while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
-        result_stream << buffer.data();
         if (GlobalConf.verbose) {
             std::cout << buffer.data();
+        } else {
+            // Only accumulate output if not in verbose mode (for error reporting)
+            result_stream << buffer.data();
         }
     }
     
