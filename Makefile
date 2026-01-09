@@ -3,7 +3,7 @@
 CXX = g++
 
 CXXFLAGS = -Wall -Wextra -std=c++17 -O2
-LDFLAGS = -lavformat -lavcodec -lavutil
+LDFLAGS =
 
 SRC = Main.cpp MainExtracts.cpp MainCalculations.cpp
 OBJ = $(SRC:%.cpp=sources/%.o)
