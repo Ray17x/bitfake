@@ -17,9 +17,101 @@ namespace MainFunctions {
         mainly for cleaniless but also looks cool.
     */
 
+    enum class AudioConversionTypes {
+        TrueLLFLAC, // True lossless (-8) Compression FLAC
+        ArchivalFLAC, // Archival Flac (-5) Compression FLAC
+        HighFidelityOPUS, // 512kbps OPUS
+        StandardOPUS, // 256kbps OPUS
+        StreamingOPUS, // 160kbps OPUS
+        PortableOPUS, // 128kbps OPUS
+        LowQualityOPUS, // 96kbps OPUS
+        V0LegacyMP3, // V0 MP3
+        StandardMP3, // 192kbps CBR MP3
+        LowQualityMP3, // 128kbps CBR MP3
+        VeryLowQualityMP3, // 96kbps CBR MP3
+        OhMyGoshMP3, // 64kbps CBR MP3
+        // Other standards can be added..
+        ogg, // Other Formats without specific compression levels
+        m4a,
+        wav,
+        aac,
+        wma,
+        aiff,
+        au,
+        ra,
+        a3ga,
+        amr,
+        awb,
+        dss,
+        dvf,
+        m4b,
+        m4p,
+        mmf,
+        mpc,
+        msv,
+        nmf,
+        oga,
+        raw,
+        rf64,
+        sln,
+        tta,
+        voc,
+        vox,
+        wv,
+        webm,
+        a8svx,
+        cda,
+    };
+
+    // inline const std::vector<std::string_view> AudioConversionTypeNames = {
+    //     "TrueLLFLAC", // No compression is done here, file is tagged or operations are rooted from files like this.
+    //     "ArchivalFLAC", // Lowest compression FLAC for archival purposes (Slight space saver on bigger libraries).
+    //     "HighFidelityOPUS", // 512kbps OPUS (likely redundant but eh)
+    //     "StandardOPUS", // 256kbps OPUS (yes! this is considered standard for OPUS)
+    //     "StreamingOPUS", // 160kpbs OPUS (Good for home servers!)
+    //     "PortableOPUS", // 128kbps OPUS (Good for mobile devices)
+    //     "LowQualityOPUS", // 96kbps OPUS (Low quality but still acceptable for podcasts)
+    //     "V0LegacyMP3", // V0 MP3 (Variable Bitrate, high quality for Cars/Old devices)
+    //     "StandardMP3", // 192kbps CBR MP3 (Standard quality MP3)
+    //     "LowQualityMP3", // 128kbps CBR MP3 (Good balance between size and quality)
+    //     "VeryLowQualityMP3", // 96kbps CBR MP3 (Low quality MP3 for small sizes)
+    //     "OhMyGoshMP3", // 64kbps CBR MP3 (Ultra low quality, only for voice recordings)
+    //     // Other standards can be added..
+    //     "ogg", // Other Formats without specific compression levels
+    //     "m4a",
+    //     "wav",
+    //     "aac",
+    //     "wma",
+    //     "aiff",
+    //     "au",
+    //     "ra",
+    //     "3ga",
+    //     "amr",
+    //     "awb",
+    //     "dss",
+    //     "dvf",
+    //     "m4b",
+    //     "m4p",
+    //     "mmf",
+    //     "mpc",
+    //     "msv",
+    //     "nmf",
+    //     "oga",
+    //     "raw",
+    //     "rf64",
+    //     "sln",
+    //     "tta",
+    //     "voc",
+    //     "vox",
+    //     "wv",
+    //     "webm",
+    //     "8svx",
+    //     "cda",
+    // };
+
     inline bool ValidateAudioFile(const std::filesystem::path& path) {
        // Check for audio file extensions
-        const std::vector<std::string> audio_extensions = {
+        const std::vector<std::string_view> audio_extensions = {
                 "mp3",
                 "ogg",
                 "m4a",
@@ -57,7 +149,7 @@ namespace MainFunctions {
         // nvm thanks to kaizen from all things linux for the list of extensions
         
         if (!std::filesystem::exists(path)) { warn("File doesn't exist."); return false; }
-        std::string ext = path.extension().string();
+        std::string_view ext = path.extension().string();
         // Remove the leading dot from the extension
         if (!ext.empty() && ext[0] == '.') {
             ext = ext.substr(1);
@@ -132,7 +224,7 @@ namespace MainFunctions {
 
     // Processing functions
     
-    extern void Convert(const std::filesystem::path& input_path, const std::string& target, const std::optional<std::filesystem::path>& output_path = std::nullopt);
+    extern void Convert(const std::filesystem::path& input_path, const std::string& target, const AudioConversionTypes goalconversion, const std::optional<std::filesystem::path>& output_path = std::nullopt);
     extern float CalculateReplayGainPerTrack(const std::filesystem::path& input_path);
     extern float CalculateReplayGainPerAlbum(const std::filesystem::path& input_path);
     //// More functions can be added here as needed.
