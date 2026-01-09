@@ -460,3 +460,5 @@ ReplayGainInfo MainFunctions::ExtractReplayGain(const std::filesystem::path& fil
         return dummy;
     }
 }   // extern ReplayGainInfo ExtractReplayGain(const std::filesystem::path& filepath);
+
+// ADD MORE EXTRACTION FUNCTIONS AS NEEDED, FOLLOW THE SAME PATTERN AS ABOVE. (or try making it more efficient ya curious fuck)
