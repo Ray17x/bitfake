@@ -7,6 +7,7 @@ using namespace Outputs;
 #include <string>
 #include <cstdio>
 #include <array>
+#include <sstream>
 
 // extern "C" {
 // #include <libavcodec/avcodec.h>
@@ -28,9 +29,23 @@ using namespace Outputs;
 // extern void Convert(const std::filesystem::path& input_path, const std::string& target, const std::optional<std::filesystem::path>& output_path = std::nullopt);
 
 namespace {
+    // Helper function to escape shell special characters in file paths
+    std::string EscapeShellPath(const std::string& path) {
+        std::string escaped;
+        escaped.reserve(path.length() + 20);
+        for (char c : path) {
+            // Escape characters that have special meaning in shells
+            if (c == '"' || c == '\\' || c == '$' || c == '`') {
+                escaped += '\\';
+            }
+            escaped += c;
+        }
+        return escaped;
+    }
+    
     // Helper function to build ffmpeg command based on conversion type
     std::string BuildFFmpegCommand(const std::filesystem::path& input, const std::filesystem::path& output, const MainFunctions::AudioConversionTypes type) {
-        std::string cmd = "ffmpeg -i \"" + input.string() + "\" ";
+        std::string cmd = "ffmpeg -i \"" + EscapeShellPath(input.string()) + "\" ";
         
         switch (type) {
             // FLAC conversions
@@ -100,7 +115,7 @@ namespace {
                 break;
         }
         
-        cmd += "-y \"" + output.string() + "\" 2>&1";
+        cmd += "-y \"" + EscapeShellPath(output.string()) + "\" 2>&1";
         return cmd;
     }
 
@@ -142,7 +157,7 @@ namespace {
             case MainFunctions::AudioConversionTypes::ra:
                 return ".ra";
             case MainFunctions::AudioConversionTypes::a3ga:
-                return ".3ga";
+                return ".a3ga";
             case MainFunctions::AudioConversionTypes::amr:
                 return ".amr";
             case MainFunctions::AudioConversionTypes::awb:
@@ -176,7 +191,7 @@ namespace {
             case MainFunctions::AudioConversionTypes::webm:
                 return ".webm";
             case MainFunctions::AudioConversionTypes::a8svx:
-                return ".8svx";
+                return ".a8svx";
             case MainFunctions::AudioConversionTypes::cda:
                 return ".cda";
             default:
@@ -229,7 +244,7 @@ void MainFunctions::Convert(const std::filesystem::path& input_path, const std::
                 }
                 
                 // Convert the file
-                Convert(entry.path(), target, goalconversion, std::optional<std::filesystem::path>(output_file));
+                MainFunctions::Convert(entry.path(), target, goalconversion, std::make_optional(output_file));
             }
         }
         
@@ -272,9 +287,9 @@ void MainFunctions::Convert(const std::filesystem::path& input_path, const std::
     
     // Read output
     std::array<char, 256> buffer;
-    std::string result;
+    std::ostringstream result_stream;
     while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
-        result += buffer.data();
+        result_stream << buffer.data();
         if (GlobalConf.verbose) {
             std::cout << buffer.data();
         }
@@ -286,8 +301,11 @@ void MainFunctions::Convert(const std::filesystem::path& input_path, const std::
         log("Successfully converted: " + output_file.string());
     } else {
         warn("Conversion may have encountered issues. Exit code: " + std::to_string(exit_code));
-        if (!GlobalConf.verbose && !result.empty()) {
-            std::cout << "FFmpeg output:\n" << result << std::endl;
+        if (!GlobalConf.verbose) {
+            std::string result = result_stream.str();
+            if (!result.empty()) {
+                std::cout << "FFmpeg output:\n" << result << std::endl;
+            }
         }
     }
 }
