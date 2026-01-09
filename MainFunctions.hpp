@@ -101,13 +101,6 @@ namespace MainFunctions {
         int YEAR;
         std::string DATE;
 
-
-        // Replaygain [IMPORTANT!!]
-        float REPLAYGAIN_TRACK_GAIN;
-        float REPLAYGAIN_ALBUM_GAIN;
-        float REPLAYGAIN_TRACK_PEAK;
-        float REPLAYGAIN_ALBUM_PEAK;
-
         // Comments 
         // Will be using comments to tag the fact that it has been confirmed to be a real lossless audio file.
         std::string COMMENT;

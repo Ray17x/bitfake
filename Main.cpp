@@ -93,6 +93,38 @@ int main(int argc, char* argv[]) {
             log("Codec Info extracted!");
         }
 
+        if (args[j] == "--extract-advanced-metadata" || args[j] == "-EAM") {
+            if (GlobalConf.INPUT_PATH.empty()) err("NO input path specified.");
+            if (std::filesystem::is_directory(GlobalConf.INPUT_PATH) && GlobalConf.OUTPUT_PATH.empty()) {
+                warn("You are extracting advanced metadata for a directory but have not specified an output file. It is highly recommended to specify an output file when extracting advanced metadata for multiple files.");
+                warn("Ctrl + C to abort please!! :*(");
+                // Count down 5 seconds
+                for (int k = 5; k > 0; --k) {
+                    std::cout << k << "..." << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+                log("Proceeding :*(");
+            }
+
+            MainFunctions::AdvancedMetaData data = MainFunctions::ExtractAdvancedMeta(GlobalConf.INPUT_PATH);
+        }
+
+        if (args[j] == "--extract-replaygain-info" || args[j] == "-ERGI") {
+            if (GlobalConf.INPUT_PATH.empty()) err("NO input path specified.");
+            if (std::filesystem::is_directory(GlobalConf.INPUT_PATH) && GlobalConf.OUTPUT_PATH.empty()) {
+                warn("You are extracting replaygain info for a directory but have not specified an output file. It is highly recommended to specify an output file when extracting replaygain info for multiple files.");
+                warn("Ctrl + C to abort please!! :*(");
+                // Count down 5 seconds
+                for (int k = 5; k > 0; --k) {
+                    std::cout << k << "..." << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+                log("Proceeding :*(");
+            }
+
+            MainFunctions::ReplayGainInfo info = MainFunctions::ExtractReplayGain(GlobalConf.INPUT_PATH);
+        }
+
     }
 
     return EXIT_SUCCESS;

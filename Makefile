@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -O2
 LDFLAGS = -lavformat -lavcodec -lavutil
 
-SRC = Main.cpp MainFunctions.cpp
+SRC = Main.cpp MainExtracts.cpp MainCalculations.cpp
 OBJ = $(SRC:%.cpp=sources/%.o)
 TARGET = sources/bitfake
 
@@ -23,5 +23,6 @@ sources/%.o: %.cpp | sources_dir
 
 clean:
 	rm -f sources/*.o sources/bitfake
+	echo "haii :3"
 
 .PHONY: all clean sources_dir
