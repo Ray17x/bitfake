@@ -149,7 +149,7 @@ namespace MainFunctions {
         // nvm thanks to kaizen from all things linux for the list of extensions
         
         if (!std::filesystem::exists(path)) { warn("File doesn't exist."); return false; }
-        std::string_view ext = path.extension().string();
+        std::string ext = path.extension().string();
         // Remove the leading dot from the extension
         if (!ext.empty() && ext[0] == '.') {
             ext = ext.substr(1);
