@@ -30,22 +30,25 @@ using namespace Outputs;
 
 namespace {
     // Helper function to escape shell special characters in file paths
+    // Uses single quotes which is safer than double quotes for shell arguments
     std::string EscapeShellPath(const std::string& path) {
-        std::string escaped;
-        escaped.reserve(path.length() + 20);
+        // In single quotes, only the single quote itself needs escaping
+        // We escape it by ending the quoted string, adding an escaped single quote, and starting a new quoted string
+        std::string escaped = "'";
         for (char c : path) {
-            // Escape characters that have special meaning in shells
-            if (c == '"' || c == '\\' || c == '$' || c == '`') {
-                escaped += '\\';
+            if (c == '\'') {
+                escaped += "'\\''";  // End quote, add escaped single quote, start new quote
+            } else {
+                escaped += c;
             }
-            escaped += c;
         }
+        escaped += "'";
         return escaped;
     }
     
     // Helper function to build ffmpeg command based on conversion type
     std::string BuildFFmpegCommand(const std::filesystem::path& input, const std::filesystem::path& output, const MainFunctions::AudioConversionTypes type) {
-        std::string cmd = "ffmpeg -i \"" + EscapeShellPath(input.string()) + "\" ";
+        std::string cmd = "ffmpeg -i " + EscapeShellPath(input.string()) + " ";
         
         switch (type) {
             // FLAC conversions
@@ -110,12 +113,11 @@ namespace {
                 cmd += "-c:a pcm_s16be ";
                 break;
             default:
-                // For other formats, use auto codec selection
-                cmd += "";
+                // Use FFmpeg's automatic codec detection for other formats
                 break;
         }
         
-        cmd += "-y \"" + EscapeShellPath(output.string()) + "\" 2>&1";
+        cmd += "-y " + EscapeShellPath(output.string()) + " 2>&1";
         return cmd;
     }
 
@@ -281,7 +283,7 @@ void MainFunctions::Convert(const std::filesystem::path& input_path, const std::
     
     FILE* pipe = popen(command.c_str(), "r");
     if (!pipe) {
-        err("Failed to execute ffmpeg command.");
+        err("Failed to execute ffmpeg command for: " + input_path.filename().string());
         return;
     }
     
